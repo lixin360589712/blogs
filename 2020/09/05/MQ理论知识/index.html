@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>MQ 基础理论 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、什么是消息中间件1.1 定义利用可靠的消息传递机制进行平台无关的数据交流。 并基于数据通信来进行分布式系统的集成。 通过提供消息传递和消息排队模型，他可以在分布式环境下扩展进程间的通信。 1.2 本质一种具备接受请求、保存数据、发送数据等功能的网络应用。 和一般的网络应用程序的区别在于它主要负责数据的接收和传递，所以性能一般都高于普通程序。 1.3 五大核心组成1.3.1 协议理论知识定义：协">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MQ 基础理论">
+<meta property="og:url" content="http://example.com/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、什么是消息中间件1.1 定义利用可靠的消息传递机制进行平台无关的数据交流。 并基于数据通信来进行分布式系统的集成。 通过提供消息传递和消息排队模型，他可以在分布式环境下扩展进程间的通信。 1.2 本质一种具备接受请求、保存数据、发送数据等功能的网络应用。 和一般的网络应用程序的区别在于它主要负责数据的接收和传递，所以性能一般都高于普通程序。 1.3 五大核心组成1.3.1 协议理论知识定义：协">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913185310.png">
+<meta property="og:image" content="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190408.png">
+<meta property="og:image" content="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190224.png">
+<meta property="article:published_time" content="2020-09-05T03:04:41.969Z">
+<meta property="article:modified_time" content="2020-09-14T03:52:07.568Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913185310.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-MQ理论知识" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" class="article-date">
+  <time datetime="2020-09-05T03:04:41.969Z" itemprop="datePublished">2020-09-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MQ/">MQ</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MQ 基础理论
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2><span id="yi-shi-me-shi-xiao-xi-zhong-jian-jian">一、什么是消息中间件</span><a href="#yi-shi-me-shi-xiao-xi-zhong-jian-jian" class="header-anchor"></a></h2><h3><span id="1-1-ding-yi">1.1 定义</span><a href="#1-1-ding-yi" class="header-anchor"></a></h3><pre><code>利用可靠的消息传递机制进行平台无关的数据交流。
+并基于数据通信来进行分布式系统的集成。
+通过提供消息传递和消息排队模型，他可以在分布式环境下扩展进程间的通信。</code></pre>
+<h3><span id="1-2-ben-zhi">1.2 本质</span><a href="#1-2-ben-zhi" class="header-anchor"></a></h3><pre><code>一种具备接受请求、保存数据、发送数据等功能的网络应用。
+和一般的网络应用程序的区别在于它主要负责数据的接收和传递，所以性能一般都高于普通程序。</code></pre>
+<h3><span id="1-3-wu-da-he-xin-zu-cheng">1.3 五大核心组成</span><a href="#1-3-wu-da-he-xin-zu-cheng" class="header-anchor"></a></h3><h4><span id="1-3-1-xie-yi">1.3.1 协议</span><a href="#1-3-1-xie-yi" class="header-anchor"></a></h4><h5><span id="li-lun-zhi-shi">理论知识</span><a href="#li-lun-zhi-shi" class="header-anchor"></a></h5><pre><code>定义：协议是指计算机之间通信时共同遵从的一组约定，是对数据合格和计算机之间交换数据时必须遵守的规则的正式描述。
+三要素：
+    1）语法：数据与控制信息的结构或格式
+    2）语义：即需要发出何种控制信息，完成何种动作以及做出何种相应
+    3）时序：即事件实现顺序的详细说明（同步）
+举例：http协议
+    语法：http规定来请求报文和相应报文的具体格式
+    语义：客户端主动发起的操作称为请求
+    时序：一个请求对应一个相应</code></pre>
+<h5><span id="chang-jian-de-xiao-xi-zhong-jian-jian-xie-yi">常见的消息中间件协议</span><a href="#chang-jian-de-xiao-xi-zhong-jian-jian-xie-yi" class="header-anchor"></a></h5><pre><code>OpenWire
+    待总结
+AMQP
+    （Advanced Message Queuing Protocal）高级消息队列协议，04年JPMorgan Chase(摩根大通集团)联合其他公司共同设计。
+    特性：有事务设计、持久化、出身金融行业，在可靠性消息处理上具备天然的优势。
+MQTT
+    （Message Queuing Telemetry Transport）消息队列遥测传输，是IBM开发的一个即时通讯协议，物联网系统架构中的重要组成部分。
+    特性：轻量、结构简单、传输快、没有事务设计、没有持久化相关设计
+    应用场景：适用于计算能力有限、低带宽、网络不稳定的场景。
+Kafka协议
+    是基于TCP的二进制协议。消息内部是通过长度来分隔，由一些基本数据类型组成
+OpenMessage
+    是近几年由阿里发起，雅虎、滴滴、Streamlio等公司共同参与创立的分布式消息中间件、流处理领域的应用开发标准
+    特性：结构简单、解决快、有事务设计、有持久化设计</code></pre>
+<h4><span id="1-3-2-chi-jiu-hua">1.3.2持久化</span><a href="#1-3-2-chi-jiu-hua" class="header-anchor"></a></h4><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">ActiveMQ</th>
+<th align="center">RabbitMQ</th>
+<th align="center">Kafka</th>
+<th align="center">RocketMQ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">文件系统</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="center">数据库</td>
+<td align="center">支持</td>
+<td align="center">/</td>
+<td align="center">/</td>
+<td align="center">/</td>
+</tr>
+</tbody></table>
+<h4><span id="1-3-3-xiao-xi-fen-fa-ji-zhi">1.3.3消息分发机制</span><a href="#1-3-3-xiao-xi-fen-fa-ji-zhi" class="header-anchor"></a></h4><h4><span id="1-3-4-gao-ke-yong">1.3.4高可用</span><a href="#1-3-4-gao-ke-yong" class="header-anchor"></a></h4><p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913185310.png" alt="高可用"></p>
+<h4><span id="1-3-5-gao-ke-kao">1.3.5高可靠</span><a href="#1-3-5-gao-ke-kao" class="header-anchor"></a></h4><p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190408.png" alt="高可靠"></p>
+<p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190224.png" alt="高可靠"></p>
+<h3><span id="1-4-xiao-xi-zhong-jian-jian-de-ying-yong-chang-jing">1.4 消息中间件的应用场景</span><a href="#1-4-xiao-xi-zhong-jian-jian-de-ying-yong-chang-jing" class="header-anchor"></a></h3><pre><code>1）跨系统数据传递
+2）高并发流量消峰
+3）数据异步处理
+等等</code></pre>
+<h3><span id="1-5-chang-jian-xiao-xi-zhong-jian-jian">1.5 常见消息中间件</span><a href="#1-5-chang-jian-xiao-xi-zhong-jian-jian" class="header-anchor"></a></h3><pre><code>ActiveMQ, RabbitMQ, Kafka, RocketMQ</code></pre>
+<h2><span id="n-ji-yu-mq-de-fen-bu-shi-shi-wu-jie-jue-fang-an">N、基于MQ的分布式事务解决方案</span><a href="#n-ji-yu-mq-de-fen-bu-shi-shi-wu-jie-jue-fang-an" class="header-anchor"></a></h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" data-id="ckf7n3ll700014polhyz2bg35" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/09/08/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MQ/">MQ</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Vue/">Vue</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/14/ActiveMQ/">ActiveMQ</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/08/Vue%E5%9F%BA%E7%A1%80/">Vue基础</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/08/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">MQ 基础理论</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -64,12 +64,16 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Vue笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-ActiveMQ" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/09/08/Vue%E7%AC%94%E8%AE%B0/" class="article-date">
-  <time datetime="2020-09-08T05:27:55.606Z" itemprop="datePublished">2020-09-08</time>
+    <a href="/2020/09/14/ActiveMQ/" class="article-date">
+  <time datetime="2020-09-14T03:43:58.571Z" itemprop="datePublished">2020-09-14</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MQ/">MQ</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -78,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/08/Vue%E7%AC%94%E8%AE%B0/">Vue从入门到放弃</a>
+      <a class="article-title" href="/2020/09/14/ActiveMQ/">ActiveMQ</a>
     </h1>
   
 
@@ -86,19 +90,129 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、Vue-js入门"><a href="#一、Vue-js入门" class="headerlink" title="一、Vue.js入门"></a>一、Vue.js入门</h2><p><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/installation.html">https://cn.vuejs.org/v2/guide/installation.html</a></p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="1-1、Hello-World"><a href="#1-1、Hello-World" class="headerlink" title="1.1、Hello World"></a>1.1、Hello World</h4><p><a target="_blank" rel="noopener" href="https://lixin360589712.github.io/vue_demo/helloWorld.html">点击查看运行结果</a></p>
+        <h2><span id="yi-activemq-jian-jie">一、ActiveMQ简介</span><a href="#yi-activemq-jian-jie" class="header-anchor"></a></h2><p><a target="_blank" rel="noopener" href="http://activemq.apache.org/">http://activemq.apache.org/</a><br>本文版本：5.14.3<br>本文案例可以参考learn/learn-mq-activemq 项目</p>
+<h4><span id="activemq-shi-shi-me">ActiveMQ是什么</span><a href="#activemq-shi-shi-me" class="header-anchor"></a></h4><p>ActiveMQ是Apache推出的，一款开源的，完全支持JMS1.1和J2EE1.4规范的JMS Provider实现的消中间件（MOM）</p>
+<h4><span id="activemq-neng-gan-shi-me">ActiveMQ能干什么</span><a href="#activemq-neng-gan-shi-me" class="header-anchor"></a></h4><p>最主要的功能就是：实现JMS Provider用来帮助实现高可用、高性能、可伸缩、易用和安全的企业级面向消息服务的系统</p>
+<h4><span id="activemq-te-dian">ActiveMQ特点</span><a href="#activemq-te-dian" class="header-anchor"></a></h4><p>1.完全支持JMSI.1和J2EE1.4规范（持久化，XA消息，事务〕<br>2.支持多种传送协议：in-VM,TCP,SSL,UDP,JGroups,JXTA<br>3.可插拔的体系结构，可以灵活定制，如：消息存储方式、安全管理等<br>4.很容易和Application Server集成使用<br>5.多种语言和协议编写客户端。语言Java,C,C++,C#,Ruby，P以Python,PHP<br>6.从设计上保证了高性能的集群，客户端一服务器，点对点<br>7.可以很容易的和spring结合使用<br>8.支持通过JDBC和journal提供高速的消息持久化<br>9.支持与Axis的整合</p>
+<h2><span id="er-an-zhuang">二、安装</span><a href="#er-an-zhuang" class="header-anchor"></a></h2><h3><span id="2-1-dan-ji-an-zhuang">2.1单机安装</span><a href="#2-1-dan-ji-an-zhuang" class="header-anchor"></a></h3><pre><code>本文采用docker安装
+1、搜索 ActiveMQ 镜像
+    docker search activemq
+2、获取 ActiveMQ 镜像
+    docker pull webcenter/activemq
+    获取后查看本地镜像 docker image
+3、docker 启动 ActiveMQ 命令
+    docker run -d --name activemq -p 61616:61616 -p 8161:8161 webcenter/activemq
+  // 端口映射可以参考docker的端口映射规则
+  // 61616是 activemq 的容器使用端口
+  // 8161是 web 页面管理端口
+4、查看 Docker中ActiveMQ 运行情况
+    docker ps -a
+5、访问控制台页面
+    http://localhost:8161/admin/index.jsp
+    默认用户名密码 admin/admin
+6、进入 ActiveMQ 所在目录
+ docker exec -it activemq /bin/bash </code></pre>
+<h3><span id="2-2-gao-ke-yong-an-zhuang">2.2 高可用安装</span><a href="#2-2-gao-ke-yong-an-zhuang" class="header-anchor"></a></h3><h2><span id="san-topic-he-queue">三、Topic 和Queue</span><a href="#san-topic-he-queue" class="header-anchor"></a></h2><h3><span id="3-1-gai-nian">3.1 概念</span><a href="#3-1-gai-nian" class="header-anchor"></a></h3><pre><code>JMS中定义了两种消息模型：点对点（point to point， queue）和发布/订阅（publish/subscribe，topic）。主要区别就是是否能重复消费。
+Queue 点对点
+消息生产者生产消息发送到queue中，然后消息消费者从queue中取出并且消费消息。消息被消费以后，queue中不再有存储，所以消息消费者不可能消费到已经被消费的消息。Queue支持存在多个消费者，但是对一个消息而言，只会有一个消费者可以消费、其它的则不能消费此消息了。当消费者不存在时，消息会一直保存，直到有消费消费
+Topic 发布/订阅
+消息生产者（发布）将消息发布到topic中，同时有多个消息消费者（订阅）消费该消息。和点对点方式不同，发布到topic的消息会被所有订阅者消费。当生产者发布消息，不管是否有消费者。都不会保存消息</code></pre>
+<h3><span id="3-2-dui-bi-topic-he-queue">3.2 对比Topic 和Queue</span><a href="#3-2-dui-bi-topic-he-queue" class="header-anchor"></a></h3><table>
+<thead>
+<tr>
+<th></th>
+<th>Topic</th>
+<th>Queue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>概要</td>
+<td>Publish Subscribe messaging 发布订阅消息</td>
+<td>Point-to-Point 点对点</td>
+</tr>
+<tr>
+<td>有无状态</td>
+<td>topic数据默认不落地，是无状态的。</td>
+<td>Queue数据默认会在mq服务器上以文件形式保存，比如Active MQ一般保存在$AMQ_HOME\data\kr-store\data下面。也可以配置成DB存储。</td>
+</tr>
+<tr>
+<td>完整性保障</td>
+<td>并不保证publisher发布的每条数据，Subscriber都能接受到。</td>
+<td>Queue保证每条数据都能被receiver接收。</td>
+</tr>
+<tr>
+<td>消息是否会丢失</td>
+<td>一般来说publisher发布消息到某一个topic时，只有正在监听该topic地址的sub能够接收到消息；如果没有sub在监听，该topic就丢失了。</td>
+<td>Sender发送消息到目标Queue，receiver可以异步接收这个Queue上的消息。Queue上的消息如果暂时没有receiver来取，也不会丢失。</td>
+</tr>
+<tr>
+<td>消息发布接收策略</td>
+<td>一对多的消息发布接收策略，监听同一个topic地址的多个sub都能收到publisher发送的消息。Sub接收完通知mq服务器</td>
+<td>一对一的消息发布接收策略，一个sender发送的消息，只能有一个receiver接收。receiver接收完后，通知mq服务器已接收，mq服务器对queue里的消息采取删除或其他操作。</td>
+</tr>
+</tbody></table>
+<h3><span id="3-3-chuan-shu-xie-yi">3.3 传输协议</span><a href="#3-3-chuan-shu-xie-yi" class="header-anchor"></a></h3><h3><span id="3-3-1-zhi-chi-de-chuan-shu-xie-yi">3.3.1支持的传输协议</span><a href="#3-3-1-zhi-chi-de-chuan-shu-xie-yi" class="header-anchor"></a></h3><p>Connector：ActiveMQ提供的，用来实现连接通讯的功能。包括：client-to-broker、broker-to-broker。ActiveMQ允许客户端使用多种协议来连接配置Transport Connector，在conf/activemq.xml中，配置如下：<br>  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transportConnectors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;openwire&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;tcp://localhost:61616&quot;</span> <span class="attr">discoveryUri</span>=<span class="string">&quot;multicast://default&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;ssl&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;ssl://localhost:61617&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;stomp&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;stomp://localhost:61613&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;xmpp&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;xmpp://localhost:61222&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transportConnectors</span>&gt;</span></span><br></pre></td></tr></table></figure><br>ActiveMQ支持的client-broker通讯协议如下：<br>  1：TCP：这个也是缺省使用的协议<br>  2：NIO<br>  3：UDP<br>  4：SSL<br>  5：Http(s)<br>  6：VM：如果客户端和broker在一个虚拟机内的话，通过VM协议通讯在VM内通讯，从而减少网络传输的开销。</p>
+<h4><span id="xie-yi-xiang-xi-jie-shao">协议详细介绍</span><a href="#xie-yi-xiang-xi-jie-shao" class="header-anchor"></a></h4><h5><span id="tcp">TCP</span><a href="#tcp" class="header-anchor"></a></h5><p>Transmission Control Protocol（TCP）<br>  1：这是默认的Broker配置，TCP的Client监听端口是61616。<br>  2：在网络传输数据前，必须要序列化数据，消息是通过一个叫wire protocol的来序列化成字节流。默认情况下，ActiveMQ把wire protocol叫做0penWire，它的目的是促使网络上的效率和数据快速交互。<br>  3．TCP连接的URI形式：tcp://hostname:port?key=value&amp;key=value,加粗部分是必须的<br>  4：TCP传输的优点：<br>  （1）TCP协议传输可靠性高，稳定性强<br>  （2）高效性：字节流方式传递，效率很高<br>  （3）有效性、可用性：应用广泛，支持任何平台<br>  5：所有关于Transport协议的可配置参数，可以参见：<br>  <a target="_blank" rel="noopener" href="http://activemq.apache.org/configuring-version-5-transports.html">http://activemq.apache.org/configuring-version-5-transports.html</a></p>
+<h5><span id="nio">NIO</span><a href="#nio" class="header-anchor"></a></h5><p>New I/O API Protocol<br>  1:NIO协议和TCP协议类似，但NIO更侧重于底层的访问操作。它允许开发人员对同一资源可有更多的client调用和服务端有更多的负载。<br>  2：适合使用NI0协议的场景：<br>  （1）可能有大量的Client去链接到Broker上<br>  一般情况下，大量的Client去链接Brokerr是被操作系統的线程所限制的。因此，NIO的实现比TCP需要更少的线程去运行，所以建议使用NIO协议。<br>  （2）可能对于Broker有一个很迟钝的网络传输，NIO比TCP提供更好的性能<br>  3：NIO连接URI形式：<strong>nio://hostname:port</strong>?Key=value<br>  4：Transport Connector配置示例</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transportConnectors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;tcp&quot;</span>  <span class="attr">uri</span>=<span class="string">&quot;tcp://localhost:61616?Trace=true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;nio&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;nio://localhost:61617?Trace=true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transportConnectors</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>  上面的配置，示范了一个TCP协议监听61616端口，一个NI0协议监听61617端口</p>
+<h5><span id="udp">UDP</span><a href="#udp" class="header-anchor"></a></h5><p>User Datasgram Protocol<br>  1：UDP和TCP的区别<br>  (1)TCP是一个原始流的传递协义，意味着数据包是有保证的，换句话说，数据包是不会被复制和丢夫的。UDP，另一方面，它是不会保证数据包的传递的。<br>  (2)TCP也是一个稳定可靠的数据包传递协议，意味着数据在传递的过程中不会被丢夫。这样确保了在发送和接收之间能够可靠的传递。相反，UDP仅仅是一个链接协议，所以它没有可靠性之说。<br>  2：从上面可以得出：TCP是被用在稳定可靠的场景中使用的；UDP通常用在快速数据传递和不怕数据丢夫的场景中，还有ActiveMQ通过防火墙时，只能用UDP<br>  3：UDP连接的URI形式：<strong>udp://hostname:port</strong>?Key=value<br>  4：Transport Connector配置示例：<br>  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transportConnectors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;udp&quot;</span>  <span class="attr">uri</span>=<span class="string">&quot;udp://localhost:61618?Trace=true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transportConnectors</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h5><span id="ssl">SSL</span><a href="#ssl" class="header-anchor"></a></h5><p>Secure Sockets Layer Protocol<br>  1：连接的URI形式：<strong>ssl://hostname:port</strong>?key=value<br>  2：Transport Connector配置示例：<br>  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transportConnectors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;ssl&quot;</span>          <span class="attr">uri</span>=<span class="string">&quot;ssl://localhost:61619?Trace=true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transportConnectors</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h5><span id="http-https">HTTP/HTTPS</span><a href="#http-https" class="header-anchor"></a></h5><p>Hypertext Transfer Protocol<br>  1：像web和email等服务需要通过防火墙来访问的，Http可以使用这种场合<br>  2：连接的URI形式：<strong>http(s)://hostname:port</strong>?Key=value<br>  3：Transport Connector配置示例：<br>  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transportConnectors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">transportConnector</span> <span class="attr">name</span>=<span class="string">&quot;http&quot;</span> <span class="attr">uri</span>=<span class="string">&quot;http://localhost:61620?Trace=true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transportConnectors</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h5><span id="vm">VM</span><a href="#vm" class="header-anchor"></a></h5><p>VM Protocol<br>  1：VM transport允许在内部通讯，从而避免了网络传输的开销。这时候采用的连接不是socket连接，而是直接的方法调用。<br>  2：第一个创建连接的客户会启动一个embed broker，接下来所有使用相同的<br>  Broker name的VM连接都会使用这个broker。当这个broker上所有的连接都关闭的时候，这个broker也会自动关闭。<br>  3：连接的URI形式：vm://brokerName?key=va1ue<br>  4：Java内嵌入的方式：<br>  vm:broke：(tcp://localhost：6000）?brokerName=embeddedbbroker&amp;persistent=false，定义了一个嵌入的broker名称为embededbroker以及配置了一个tcptransprotconnector在监听端口6000上<br>  5：使用一个加载个配置文件来启动broker<br>  Vm://localhost?brokerConfig=xbean:activemq.xml</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/09/14/ActiveMQ/" data-id="ckf7n3lla00024pol6hsy03wh" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Vue基础" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/09/08/Vue%E5%9F%BA%E7%A1%80/" class="article-date">
+  <time datetime="2020-09-08T05:27:55.606Z" itemprop="datePublished">2020-09-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Vue/">Vue</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/08/Vue%E5%9F%BA%E7%A1%80/">Vue基础</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2><span id="yi-vue-js-ru-men">一、Vue.js入门</span><a href="#yi-vue-js-ru-men" class="header-anchor"></a></h2><p><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/installation.html">https://cn.vuejs.org/v2/guide/installation.html</a></p>
+<h3><span id="li-zi">例子</span><a href="#li-zi" class="header-anchor"></a></h3><h4><span id="1-1-hello-world">1.1、Hello World</span><a href="#1-1-hello-world" class="header-anchor"></a></h4><p><a target="_blank" rel="noopener" href="https://lixin360589712.github.io/vue_demo/helloWorld.html">点击查看运行结果</a></p>
 <details>
 <summary>点击查看源码</summary>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>My first Vue app<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 文件头中引入vue.js包,根据场景不通引入下方其中一个 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 开发环境版本，包含了有帮助的命令行警告 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 生产环境版本，优化了尺寸和速度 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue&quot;&gt;&lt;/script&gt; --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app&quot;</span>&gt;</span></span><br><span class="line">      &#123;&#123; message &#125;&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> app = <span class="keyword">new</span> Vue(&#123;</span></span><br><span class="line"><span class="javascript">        el: <span class="string">&quot;#app&quot;</span>,</span></span><br><span class="line">        data: &#123;</span><br><span class="line"><span class="javascript">          message: <span class="string">&quot;Hello World!&quot;</span></span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 </details>
 
-<h5 id="知识点：引入Vue-js包-、声明式渲染"><a href="#知识点：引入Vue-js包-、声明式渲染" class="headerlink" title="知识点：引入Vue.js包 、声明式渲染"></a>知识点：引入Vue.js包 、声明式渲染</h5><pre><code>1）声明式渲染
+<h5><span id="zhi-shi-dian-yin-ru-vue-js-bao-sheng-ming-shi-xuan-ran">知识点：引入Vue.js包 、声明式渲染</span><a href="#zhi-shi-dian-yin-ru-vue-js-bao-sheng-ming-shi-xuan-ran" class="header-anchor"></a></h5><pre><code>1）声明式渲染
 Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数据渲染进 DOM 的系统。
 2）理解响应式操作
 Vue为响应式的，打开浏览器控制台（console），直接修改app.message值，例子也会相应的更新。注意我们不再和 HTML 直接交互了。
 一个 Vue 应用会将其挂载到一个 DOM 元素上 (对于这个例子是 `#app`) 然后对其进行完全控制。那个 HTML 是我们的入口，但其余都会发生在新创建的 Vue 实例内部。</code></pre>
-<h4 id="1-2、鼠标悬停案例"><a href="#1-2、鼠标悬停案例" class="headerlink" title="1.2、鼠标悬停案例"></a>1.2、鼠标悬停案例</h4><details>
+<h4><span id="1-2-shu-biao-xuan-ting-an-li">1.2、鼠标悬停案例</span><a href="#1-2-shu-biao-xuan-ting-an-li" class="header-anchor"></a></h4><details>
 <summary>点击查看源码</summary>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;head&gt;</span><br><span class="line">      &lt;title&gt;Vue demo hello world!&lt;&#x2F;title&gt;</span><br><span class="line">      &lt;!-- 开发环境版本，包含了有帮助的命令行警告 --&gt;</span><br><span class="line">      &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;vue&#x2F;dist&#x2F;vue.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">      &lt;!-- 生产环境版本，优化了尺寸和速度 --&gt;</span><br><span class="line">      &lt;!-- &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;vue&quot;&gt;&lt;&#x2F;script&gt; --&gt;</span><br><span class="line">  &lt;&#x2F;head&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;app2&quot;&gt;</span><br><span class="line">        &lt;span v-bind:title&#x3D;&quot;message&quot;&gt;</span><br><span class="line">            鼠标悬停几秒查看此处动态绑定的提示信息</span><br><span class="line">        &lt;&#x2F;span&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    var app2 &#x3D; new Vue(&#123;</span><br><span class="line">      el: &quot;#app2&quot;,</span><br><span class="line">      data: &#123;</span><br><span class="line">        message: &#39;页面加载于&#39; + new Date().toLocaleString()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">  &lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
 </details>
@@ -132,10 +246,10 @@ Vue为响应式的，打开浏览器控制台（console），直接修改app.mes
 </html>
 </details>
 
-<h5 id="指令：v-bind"><a href="#指令：v-bind" class="headerlink" title="指令：v-bind"></a>指令：v-bind</h5><h5 id="知识点：绑定元素指令"><a href="#知识点：绑定元素指令" class="headerlink" title="知识点：绑定元素指令"></a>知识点：绑定元素指令</h5><pre><code>绑定元素指令 attribute：
+<h5><span id="zhi-ling-v-bind">指令：v-bind</span><a href="#zhi-ling-v-bind" class="header-anchor"></a></h5><h5><span id="zhi-shi-dian-bang-ding-yuan-su-zhi-ling">知识点：绑定元素指令</span><a href="#zhi-shi-dian-bang-ding-yuan-su-zhi-ling" class="header-anchor"></a></h5><pre><code>绑定元素指令 attribute：
 例子中的attribute v-bind 被称为指令，指令带有前缀 v- 以表示它们是 Vue 提供的特殊 attribute，它们会在渲染的 DOM 上应用特殊的响应式行为。
 v-bind:title=&quot;message&quot; 指令的意思是：“将这个元素节点的 title attribute 和 Vue 实例的 message property 保持一致”。</code></pre>
-<h4 id="1-3、条件-v-if"><a href="#1-3、条件-v-if" class="headerlink" title="1.3、条件 v-if"></a>1.3、条件 v-if</h4><details>
+<h4><span id="1-3-tiao-jian-v-if">1.3、条件 v-if</span><a href="#1-3-tiao-jian-v-if" class="header-anchor"></a></h4><details>
 <summary>点击查看源码</summary>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;head&gt;</span><br><span class="line">      &lt;title&gt;Vue demo hello world!&lt;&#x2F;title&gt;</span><br><span class="line">      &lt;!-- 开发环境版本，包含了有帮助的命令行警告 --&gt;</span><br><span class="line">      &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;vue&#x2F;dist&#x2F;vue.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">      &lt;!-- 生产环境版本，优化了尺寸和速度 --&gt;</span><br><span class="line">      &lt;!-- &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;vue&quot;&gt;&lt;&#x2F;script&gt; --&gt;</span><br><span class="line">  &lt;&#x2F;head&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;app3&quot;&gt;</span><br><span class="line">        &lt;p v-if&#x3D;&quot;seen&quot;&gt;现在你看到我了&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    var app3 &#x3D; new Vue(&#123;</span><br><span class="line">      el: &quot;#app3&quot;,</span><br><span class="line">      data: &#123;</span><br><span class="line">        seen: true</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">  &lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
 </details>
@@ -168,19 +282,20 @@ v-bind:title=&quot;message&quot; 指令的意思是：“将这个元素节点�
 </details>
 
 <p>可以在控制台输入app3.seen = false 或者app3._data.seen = false,会发现之前显示的消息消失了。</p>
-<h5 id="指令-v-if（条件）"><a href="#指令-v-if（条件）" class="headerlink" title="指令 v-if（条件）"></a>指令 v-if（条件）</h5><h5 id="知识点：把数据绑定到-DOM-文本或-attribute"><a href="#知识点：把数据绑定到-DOM-文本或-attribute" class="headerlink" title="知识点：把数据绑定到 DOM 文本或 attribute"></a>知识点：把数据绑定到 DOM 文本或 attribute</h5><pre><code>这个例子演示了我们不仅可以把数据绑定到 DOM 文本或 attribute，还可以绑定到 DOM 结构。此外，Vue 也提供一个强大的过渡效果系统，可以在 Vue 插入/更新/移除元素时自动应用过渡效果。</code></pre>
-<h4 id="1-3、循环-v-for"><a href="#1-3、循环-v-for" class="headerlink" title="1.3、循环 v-for"></a>1.3、循环 v-for</h4><details>
+<h5><span id="zhi-ling-v-if-tiao-jian">指令 v-if（条件）</span><a href="#zhi-ling-v-if-tiao-jian" class="header-anchor"></a></h5><h5><span id="zhi-shi-dian-ba-shu-ju-bang-ding-dao-dom-wen-ben-huo-attribute">知识点：把数据绑定到 DOM 文本或 attribute</span><a href="#zhi-shi-dian-ba-shu-ju-bang-ding-dao-dom-wen-ben-huo-attribute" class="header-anchor"></a></h5><pre><code>这个例子演示了我们不仅可以把数据绑定到 DOM 文本或 attribute，还可以绑定到 DOM 结构。此外，Vue 也提供一个强大的过渡效果系统，可以在 Vue 插入/更新/移除元素时自动应用过渡效果。</code></pre>
+<h4><span id="1-3-xun-huan-v-for">1.3、循环 v-for</span><a href="#1-3-xun-huan-v-for" class="header-anchor"></a></h4><p><a target="_blank" rel="noopener" href="https://lixin360589712.github.io/vue_demo/v-for.html">点击查看运行结果</a></p>
+<details>
 <summary>点击查看源码</summary>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>My first Vue app<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 文件头中引入vue.js包,根据场景不通引入下方其中一个 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 开发环境版本，包含了有帮助的命令行警告 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 生产环境版本，优化了尺寸和速度 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue&quot;&gt;&lt;/script&gt; --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app-4&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">&quot;todo in todos&quot;</span>&gt;</span></span><br><span class="line">          &#123;&#123; todo.text &#125;&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ol</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> app4 = <span class="keyword">new</span> Vue(&#123;</span></span><br><span class="line"><span class="javascript">        el: <span class="string">&#x27;#app-4&#x27;</span>,</span></span><br><span class="line">        data: &#123;</span><br><span class="line">          todos: [</span><br><span class="line"><span class="javascript">            &#123; <span class="attr">text</span>: <span class="string">&#x27;学习 JavaScript&#x27;</span> &#125;,</span></span><br><span class="line"><span class="javascript">            &#123; <span class="attr">text</span>: <span class="string">&#x27;学习 Vue&#x27;</span> &#125;,</span></span><br><span class="line"><span class="javascript">            &#123; <span class="attr">text</span>: <span class="string">&#x27;整个牛项目&#x27;</span> &#125;</span></span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 </details>
-[点击查看运行结果](https://lixin360589712.github.io/vue_demo/v-for.html)
 
 
-<h2 id="二、Vue-router"><a href="#二、Vue-router" class="headerlink" title="二、Vue-router"></a>二、Vue-router</h2><h2 id="三、Vuex"><a href="#三、Vuex" class="headerlink" title="三、Vuex"></a>三、Vuex</h2>
+
+<h2><span id="er-vue-router">二、Vue-router</span><a href="#er-vue-router" class="header-anchor"></a></h2><h2><span id="san-vuex">三、Vuex</span><a href="#san-vuex" class="header-anchor"></a></h2>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/09/08/Vue%E7%AC%94%E8%AE%B0/" data-id="ckf0vcpt0000062s6ctjyae30" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/09/08/Vue%E5%9F%BA%E7%A1%80/" data-id="ckf7n3lle00044polbwh219ad" class="article-share-link">Share</a>
       
       
     </footer>
@@ -213,25 +328,126 @@ v-bind:title=&quot;message&quot; 指令的意思是：“将这个元素节点�
     <div class="article-entry" itemprop="articleBody">
       
         <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<h2><span id="quick-start">Quick Start</span><a href="#quick-start" class="header-anchor"></a></h2><h3><span id="create-a-new-post">Create a new post</span><a href="#create-a-new-post" class="header-anchor"></a></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h3><span id="run-server">Run server</span><a href="#run-server" class="header-anchor"></a></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<h3><span id="generate-static-files">Generate static files</span><a href="#generate-static-files" class="header-anchor"></a></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h3><span id="deploy-to-remote-sites">Deploy to remote sites</span><a href="#deploy-to-remote-sites" class="header-anchor"></a></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><p>$ hexo d<br>ERROR Deployer not found: git</p>
+<h3><span id="chang-jian-wen-ti">常见问题</span><a href="#chang-jian-wen-ti" class="header-anchor"></a></h3><p>$ hexo d<br>ERROR Deployer not found: git</p>
 <p>npm install –save hexo-deployer-git</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/09/08/hello-world/" data-id="ckf0vcpt6000162s66xx39k2d" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/09/08/hello-world/" data-id="ckf7n3llf00054pol7gzo8u6g" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-MQ理论知识" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" class="article-date">
+  <time datetime="2020-09-05T03:04:41.969Z" itemprop="datePublished">2020-09-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MQ/">MQ</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">MQ 基础理论</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2><span id="yi-shi-me-shi-xiao-xi-zhong-jian-jian">一、什么是消息中间件</span><a href="#yi-shi-me-shi-xiao-xi-zhong-jian-jian" class="header-anchor"></a></h2><h3><span id="1-1-ding-yi">1.1 定义</span><a href="#1-1-ding-yi" class="header-anchor"></a></h3><pre><code>利用可靠的消息传递机制进行平台无关的数据交流。
+并基于数据通信来进行分布式系统的集成。
+通过提供消息传递和消息排队模型，他可以在分布式环境下扩展进程间的通信。</code></pre>
+<h3><span id="1-2-ben-zhi">1.2 本质</span><a href="#1-2-ben-zhi" class="header-anchor"></a></h3><pre><code>一种具备接受请求、保存数据、发送数据等功能的网络应用。
+和一般的网络应用程序的区别在于它主要负责数据的接收和传递，所以性能一般都高于普通程序。</code></pre>
+<h3><span id="1-3-wu-da-he-xin-zu-cheng">1.3 五大核心组成</span><a href="#1-3-wu-da-he-xin-zu-cheng" class="header-anchor"></a></h3><h4><span id="1-3-1-xie-yi">1.3.1 协议</span><a href="#1-3-1-xie-yi" class="header-anchor"></a></h4><h5><span id="li-lun-zhi-shi">理论知识</span><a href="#li-lun-zhi-shi" class="header-anchor"></a></h5><pre><code>定义：协议是指计算机之间通信时共同遵从的一组约定，是对数据合格和计算机之间交换数据时必须遵守的规则的正式描述。
+三要素：
+    1）语法：数据与控制信息的结构或格式
+    2）语义：即需要发出何种控制信息，完成何种动作以及做出何种相应
+    3）时序：即事件实现顺序的详细说明（同步）
+举例：http协议
+    语法：http规定来请求报文和相应报文的具体格式
+    语义：客户端主动发起的操作称为请求
+    时序：一个请求对应一个相应</code></pre>
+<h5><span id="chang-jian-de-xiao-xi-zhong-jian-jian-xie-yi">常见的消息中间件协议</span><a href="#chang-jian-de-xiao-xi-zhong-jian-jian-xie-yi" class="header-anchor"></a></h5><pre><code>OpenWire
+    待总结
+AMQP
+    （Advanced Message Queuing Protocal）高级消息队列协议，04年JPMorgan Chase(摩根大通集团)联合其他公司共同设计。
+    特性：有事务设计、持久化、出身金融行业，在可靠性消息处理上具备天然的优势。
+MQTT
+    （Message Queuing Telemetry Transport）消息队列遥测传输，是IBM开发的一个即时通讯协议，物联网系统架构中的重要组成部分。
+    特性：轻量、结构简单、传输快、没有事务设计、没有持久化相关设计
+    应用场景：适用于计算能力有限、低带宽、网络不稳定的场景。
+Kafka协议
+    是基于TCP的二进制协议。消息内部是通过长度来分隔，由一些基本数据类型组成
+OpenMessage
+    是近几年由阿里发起，雅虎、滴滴、Streamlio等公司共同参与创立的分布式消息中间件、流处理领域的应用开发标准
+    特性：结构简单、解决快、有事务设计、有持久化设计</code></pre>
+<h4><span id="1-3-2-chi-jiu-hua">1.3.2持久化</span><a href="#1-3-2-chi-jiu-hua" class="header-anchor"></a></h4><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">ActiveMQ</th>
+<th align="center">RabbitMQ</th>
+<th align="center">Kafka</th>
+<th align="center">RocketMQ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">文件系统</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="center">数据库</td>
+<td align="center">支持</td>
+<td align="center">/</td>
+<td align="center">/</td>
+<td align="center">/</td>
+</tr>
+</tbody></table>
+<h4><span id="1-3-3-xiao-xi-fen-fa-ji-zhi">1.3.3消息分发机制</span><a href="#1-3-3-xiao-xi-fen-fa-ji-zhi" class="header-anchor"></a></h4><h4><span id="1-3-4-gao-ke-yong">1.3.4高可用</span><a href="#1-3-4-gao-ke-yong" class="header-anchor"></a></h4><p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913185310.png" alt="高可用"></p>
+<h4><span id="1-3-5-gao-ke-kao">1.3.5高可靠</span><a href="#1-3-5-gao-ke-kao" class="header-anchor"></a></h4><p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190408.png" alt="高可靠"></p>
+<p><img src="https://gitee.com/lixin360589712/blog-image/raw/master/img/20200913190224.png" alt="高可靠"></p>
+<h3><span id="1-4-xiao-xi-zhong-jian-jian-de-ying-yong-chang-jing">1.4 消息中间件的应用场景</span><a href="#1-4-xiao-xi-zhong-jian-jian-de-ying-yong-chang-jing" class="header-anchor"></a></h3><pre><code>1）跨系统数据传递
+2）高并发流量消峰
+3）数据异步处理
+等等</code></pre>
+<h3><span id="1-5-chang-jian-xiao-xi-zhong-jian-jian">1.5 常见消息中间件</span><a href="#1-5-chang-jian-xiao-xi-zhong-jian-jian" class="header-anchor"></a></h3><pre><code>ActiveMQ, RabbitMQ, Kafka, RocketMQ</code></pre>
+<h2><span id="n-ji-yu-mq-de-fen-bu-shi-shi-wu-jie-jue-fang-an">N、基于MQ的分布式事务解决方案</span><a href="#n-ji-yu-mq-de-fen-bu-shi-shi-wu-jie-jue-fang-an" class="header-anchor"></a></h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" data-id="ckf7n3ll700014polhyz2bg35" class="article-share-link">Share</a>
       
       
     </footer>
@@ -248,6 +464,13 @@ v-bind:title=&quot;message&quot; 指令的意思是：“将这个元素节点�
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MQ/">MQ</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Vue/">Vue</a></li></ul>
+    </div>
+  </div>
+
 
   
     
@@ -272,11 +495,19 @@ v-bind:title=&quot;message&quot; 指令的意思是：“将这个元素节点�
       <ul>
         
           <li>
-            <a href="/2020/09/08/Vue%E7%AC%94%E8%AE%B0/">Vue从入门到放弃</a>
+            <a href="/2020/09/14/ActiveMQ/">ActiveMQ</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/08/Vue%E5%9F%BA%E7%A1%80/">Vue基础</a>
           </li>
         
           <li>
             <a href="/2020/09/08/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/05/MQ%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">MQ 基础理论</a>
           </li>
         
       </ul>
